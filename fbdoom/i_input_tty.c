@@ -258,6 +258,7 @@ static int kb = -1; /* keyboard file descriptor */
 void kbd_shutdown(void)
 {
     /* Shut down nicely. */
+return;
 
     printf("Cleaning up.\n");
     fflush(stdout);
@@ -308,7 +309,8 @@ static int kbd_init(void)
         printf("Unable to find a file descriptor associated with "\
                 "the keyboard.\n" \
                 "Perhaps you're not using a virtual terminal?\n");
-        return 1;
+	printf("yeah, on second thought fuck that\nhi #tod2\n");
+        return 0;
     }
 
     /* Find the keyboard's mode so we can restore it later. */
@@ -352,6 +354,7 @@ static int kbd_init(void)
 
 int kbd_read(int *pressed, unsigned char *key)
 {
+return 0;
     unsigned char data;
 
     if (read(kb, &data, 1) < 1) {
@@ -485,6 +488,7 @@ void I_GetEvent(void)
 
 void I_InitInput(void)
 {
+return;
     kbd_init();
 
     //UpdateFocus();

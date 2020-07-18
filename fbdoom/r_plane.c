@@ -127,6 +127,7 @@ R_MapPlane
      || x2 >= viewwidth
      || y > viewheight)
     {
+return;
 	I_Error ("R_MapPlane: %i, %i at %i",x1,x2,y);
     }
 #endif

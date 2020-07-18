@@ -20,7 +20,7 @@ OBJS+=$(OBJDIR)/i_video_fbdev.o
 OBJS+=$(OBJDIR)/i_input_tty.o
 
 CC=$(CROSS_COMPILE)gcc  # gcc or g++
-CFLAGS+=-ggdb3 -Os
+CFLAGS+=-ggdb3 -Os -static
 LDFLAGS+=-Wl,--gc-sections
 CFLAGS+=-ggdb3 -Wall -DNORMALUNIX -DLINUX -DSNDSERV # -DUSEASM
 LIBS+=-lm -lc

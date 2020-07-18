@@ -115,8 +115,10 @@ void R_DrawColumn (void)
 #ifdef RANGECHECK 
     if ((unsigned)dc_x >= SCREENWIDTH
 	|| dc_yl < 0
-	|| dc_yh >= SCREENHEIGHT) 
+	|| dc_yh >= SCREENHEIGHT)  {
+return;
 	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x); 
+}
 #endif 
 
     // Framebuffer destination address.
@@ -225,7 +227,7 @@ void R_DrawColumnLow (void)
 	|| dc_yl < 0
 	|| dc_yh >= SCREENHEIGHT)
     {
-	
+	return;
 	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x);
     }
     //	dccount++; 

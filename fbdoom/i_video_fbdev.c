@@ -193,6 +193,9 @@ void I_InitGraphics (void)
         if (fb.yres / SCREENHEIGHT < fb_scaling)
             fb_scaling = fb.yres / SCREENHEIGHT;
         printf("I_InitGraphics: Auto-scaling factor: %d\n", fb_scaling);
+	fb_scaling = 1;
+	fb.xres = 320;
+	fb.yres = 240;
     }
 
 
@@ -442,8 +445,18 @@ void I_FinishUpdate (void)
     }
 
     /* Start drawing from y-offset */
-    lseek(fd_fb, y_offset * fb.xres, SEEK_SET);
-    write(fd_fb, I_VideoBuffer_FB, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */
+    y_offset     = (((fb.xres - (SCREENHEIGHT * fb_scaling)) * fb.bits_per_pixel/8)) / 2;
+    lseek(fd_fb, y_offset* fb.xres, SEEK_SET);
+    char *x = malloc(320 * 240);
+    int i,j;
+    for (i = 0; i < 320; i++) {
+	    for (j = 0; j < 240; j++) {
+		    x[(i * 240) + j] = I_VideoBuffer_FB[(j * 320) + i];
+	    }
+    }
+    //write(fd_fb, I_VideoBuffer_FB, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */`
+    write(fd_fb, x, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */
+    free (x);
 }
 
 //

@@ -1031,6 +1031,7 @@ static inline void WriteSquashedLine1x(byte *dest, byte *src)
 {
     int x;
 
+    //for (x=0; x<240; )
     for (x=0; x<SCREENWIDTH; )
     {
         // Draw in blocks of 5

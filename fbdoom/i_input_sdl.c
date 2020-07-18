@@ -362,6 +362,7 @@ void I_StartTic (void)
 
 void I_InitInput(void)
 {
+return;
     SDL_Event dummy;
     byte *doompal;
     char *env;

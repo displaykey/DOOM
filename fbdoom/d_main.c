@@ -182,9 +182,10 @@ void D_Display (void)
     boolean			done;
     boolean			wipe;
     boolean			redrawsbar;
-
+/*
     if (nodrawers)
     	return;                    // for comparative timing / profiling
+*/
 		
     redrawsbar = false;
     
@@ -192,6 +193,7 @@ void D_Display (void)
     if (setsizeneeded)
     {
 		R_ExecuteSetViewSize ();
+printf("executesetviewsize\n");
 		oldgamestate = -1;                      // force background redraw
 		borderdrawcount = 3;
     }
@@ -201,12 +203,15 @@ void D_Display (void)
 		{
 		wipe = true;
 		wipe_StartScreen(0, 0, SCREENWIDTH, SCREENHEIGHT);
+printf("wipe startscreen\n");
     }
     else
     	wipe = false;
 
-    if (gamestate == GS_LEVEL && gametic)
+    if (gamestate == GS_LEVEL && gametic) {
     	HU_Erase();
+printf("hu_erase\n");
+}
     
     // do buffered drawing
     switch (gamestate)
@@ -222,14 +227,17 @@ void D_Display (void)
 			redrawsbar = true;              // just put away the help screen
 		ST_Drawer (viewheight == 200, redrawsbar );
 		fullscreen = viewheight == 200;
+printf("gs_level\n");
 		break;
 
       case GS_INTERMISSION:
 		WI_Drawer ();
+printf("intermission\n");
 		break;
 
       case GS_FINALE:
 		F_Drawer ();
+printf("f_drawer\n");
 		break;
 
       case GS_DEMOSCREEN:
@@ -428,12 +436,17 @@ void D_DoomLoop (void)
     I_GraphicsCheckCommandLine();
     I_SetGrabMouseCallback(D_GrabMouseCallback);
     I_InitGraphics();
+printf("graphics init\n");
     I_EnableLoadingDisk();
+printf("loading disk init\n");
 
     V_RestoreBuffer();
+printf("restore buffer\n");
     R_ExecuteSetViewSize();
+printf("set view size\n");
 
     D_StartGameLoop();
+printf("start game loop\n");
 
     if (testcontrols)
     {
@@ -447,12 +460,15 @@ void D_DoomLoop (void)
 
 		TryRunTics (); // will run at least one tic
 
-		S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
+	//	S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
 
 		// Update display, next frame, with current state.
 		if (screenvisible)
 		{
 			D_Display ();
+		} else {
+			printf("A FUCK\n");
+			D_Display();
 		}
     }
 }
