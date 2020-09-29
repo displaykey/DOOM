@@ -144,9 +144,15 @@ void cmap_to_fb(uint8_t * out, uint8_t * in, int in_pixels)
         r = (uint16_t)(c.r >> (8 - fb.red.length));
         g = (uint16_t)(c.g >> (8 - fb.green.length));
         b = (uint16_t)(c.b >> (8 - fb.blue.length));
-        pix = r << fb.red.offset;
+
+        // pix = r << fb.red.offset;
+        // pix |= g << fb.green.offset;
+        // pix |= b << fb.blue.offset;
+
+        // BMW key FB color order doesn't come back correctly for some reason...
+        pix = r << fb.blue.offset;
         pix |= g << fb.green.offset;
-        pix |= b << fb.blue.offset;
+        pix |= b << fb.red.offset;
 
         for (k = 0; k < fb_scaling; k++) {
             for (j = 0; j < fb.bits_per_pixel/8; j++) {
@@ -422,41 +428,47 @@ void I_FinishUpdate (void)
     line_in  = (unsigned char *) I_VideoBuffer;
     line_out = (unsigned char *) I_VideoBuffer_FB;
 
-    y = SCREENHEIGHT;
+//     y = SCREENHEIGHT;
+//     while (y--)
+//     {
+//         int i;
+//         for (i = 0; i < fb_scaling; i++) {
+//             line_out += x_offset;
+// #ifdef CMAP256
+//             for (fb_scaling == 1) {
+//                 memcpy(line_out, line_in, SCREENWIDTH); /* fb_width is bigger than Doom SCREENWIDTH... */
+//             } else {
+//                 //XXX FIXME fb_scaling support!
+//             }
+// #else
+//             //cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
+//             cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
+// #endif
+//             line_out += (SCREENWIDTH * fb_scaling * (fb.bits_per_pixel/8)) + x_offset_end;
+//         }
+//         line_in += SCREENWIDTH;
+//     }
 
-    while (y--)
-    {
-        int i;
-        for (i = 0; i < fb_scaling; i++) {
-            line_out += x_offset;
-#ifdef CMAP256
-            for (fb_scaling == 1) {
-                memcpy(line_out, line_in, SCREENWIDTH); /* fb_width is bigger than Doom SCREENWIDTH... */
-            } else {
-                //XXX FIXME fb_scaling support!
+    // rotate the framebuffer for the BMW key
+    int x; // 0 .. 320
+    y = SCREENHEIGHT; // 0 .. 240
+    int c; // 0 .. 3
+    line_out = malloc(SCREENWIDTH * (fb.bits_per_pixel/8));
+    while (y--) {
+        cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
+        for (x = 0; x < 320; x++) {
+            for (c = 0; c < (fb.bits_per_pixel/8); c++) {
+                I_VideoBuffer_FB[(x * 240 + y) * (fb.bits_per_pixel/8) + c] = line_out[x * (fb.bits_per_pixel/8) + c];
             }
-#else
-            //cmap_to_rgb565((void*)line_out, (void*)line_in, SCREENWIDTH);
-            cmap_to_fb((void*)line_out, (void*)line_in, SCREENWIDTH);
-#endif
-            line_out += (SCREENWIDTH * fb_scaling * (fb.bits_per_pixel/8)) + x_offset_end;
         }
         line_in += SCREENWIDTH;
     }
+    free(line_out);
 
     /* Start drawing from y-offset */
-    y_offset     = (((fb.xres - (SCREENHEIGHT * fb_scaling)) * fb.bits_per_pixel/8)) / 2;
-    lseek(fd_fb, y_offset* fb.xres, SEEK_SET);
-    char *x = malloc(320 * 240);
-    int i,j;
-    for (i = 0; i < 320; i++) {
-	    for (j = 0; j < 240; j++) {
-		    x[(i * 240) + j] = I_VideoBuffer_FB[(j * 320) + i];
-	    }
-    }
-    //write(fd_fb, I_VideoBuffer_FB, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */`
-    write(fd_fb, x, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */
-    free (x);
+    lseek(fd_fb, y_offset * fb.xres, SEEK_SET);
+    write(fd_fb, I_VideoBuffer_FB, (SCREENHEIGHT * fb_scaling * (fb.bits_per_pixel/8)) * fb.xres); /* draw only portion used by doom + x-offsets */
+
 }
 
 //
