@@ -5,9 +5,7 @@
 Adaptation of the original DOOM
 to be easily portable to framebuffer devices with minimal depenencies.
 Runs on:
-* Plain desktop Linux framebuffer,
-* Siglent SSA 3021X Spectrum Analyzer,
-* Frosted OS
+* BMW displaykey
 
 To build (example):
 * cd fbdoom
