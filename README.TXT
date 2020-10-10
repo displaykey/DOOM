@@ -11,7 +11,7 @@ Runs on:
 
 To build (example):
 * cd fbdoom
-* make CROSS_COMPILE=arm-linux-gnueabihf- NOSDL=1
+* make CROSS_COMPILE=arm-linux-gnueabi- NOSDL=1
 
 
 Original readme
